@@ -8,7 +8,7 @@ brew tap qrivi/tap
 
 ## Binaries
 
-### [`macicon 1.0.0`](https://github.com/Qrivi/macicon/releases/tag/1.0.0)
+### [`macicon`](https://github.com/Qrivi/macicon)
 
 > Fast macOS-styled app icon generator
 
