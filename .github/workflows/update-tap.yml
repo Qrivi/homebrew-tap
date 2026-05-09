@@ -1,0 +1,135 @@
+name: Update tap
+
+on:
+  workflow_dispatch:
+    inputs:
+      package:
+        description: Package key from tap-packages.yml
+        required: true
+        type: string
+      repo:
+        description: Source repository, e.g. Qrivi/macicon
+        required: true
+        type: string
+      tag:
+        description: Release tag to install
+        required: true
+        type: string
+  repository_dispatch:
+    types:
+      - bump-tap
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    name: Update package
+    runs-on: macos-latest
+
+    steps:
+      - name: Check out tap
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Register checkout as Homebrew tap
+        run: |
+          set -euo pipefail
+
+          tap_root="$(brew --repository)/Library/Taps/qrivi"
+          tap_path="${tap_root}/homebrew-tap"
+
+          mkdir -p "${tap_root}"
+          if [[ -e "${tap_path}" && ! -L "${tap_path}" ]]; then
+            rm -rf "${tap_path}"
+          fi
+          ln -sfn "${GITHUB_WORKSPACE}" "${tap_path}"
+
+      - name: Resolve update request
+        id: request
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_PACKAGE: ${{ github.event.client_payload.package }}
+          DISPATCH_REPO: ${{ github.event.client_payload.repo }}
+          DISPATCH_TAG: ${{ github.event.client_payload.tag }}
+          INPUT_PACKAGE: ${{ inputs.package }}
+          INPUT_REPO: ${{ inputs.repo }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+
+          if [[ "${EVENT_NAME}" == "repository_dispatch" ]]; then
+            package="${DISPATCH_PACKAGE}"
+            repo="${DISPATCH_REPO}"
+            tag="${DISPATCH_TAG}"
+          else
+            package="${INPUT_PACKAGE}"
+            repo="${INPUT_REPO}"
+            tag="${INPUT_TAG}"
+          fi
+
+          if [[ -z "${package}" || -z "${repo}" || -z "${tag}" ]]; then
+            echo "package, repo, and tag are required." >&2
+            exit 1
+          fi
+
+          echo "package=${package}" >> "${GITHUB_OUTPUT}"
+          echo "repo=${repo}" >> "${GITHUB_OUTPUT}"
+          echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
+
+      - name: Render tap files
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          npm run update-tap -- \
+            --package "${{ steps.request.outputs.package }}" \
+            --repo "${{ steps.request.outputs.repo }}" \
+            --tag "${{ steps.request.outputs.tag }}"
+
+      - name: Resolve package metadata
+        id: metadata
+        env:
+          PACKAGE: ${{ steps.request.outputs.package }}
+        run: |
+          set -euo pipefail
+
+          package_type="$(node -e 'const fs = require("fs"); const YAML = require("yaml"); console.log(YAML.parse(fs.readFileSync("tap-packages.yml", "utf8")).packages[process.env.PACKAGE].type)')"
+          echo "type=${package_type}" >> "${GITHUB_OUTPUT}"
+
+      - name: Validate tap
+        run: |
+          brew style Formula/*.rb Casks/*.rb
+
+          if [[ "${{ steps.metadata.outputs.type }}" == "cask" ]]; then
+            brew audit --cask --strict "${{ steps.request.outputs.package }}"
+            brew fetch --cask "${{ steps.request.outputs.package }}"
+          else
+            brew audit --strict "${{ steps.request.outputs.package }}"
+            brew fetch --formula "${{ steps.request.outputs.package }}"
+          fi
+
+      - name: Commit changes
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet; then
+            echo "No tap changes to commit."
+            exit 0
+          fi
+
+          version="${{ steps.request.outputs.tag }}"
+          version="${version#v}"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add Formula Casks README.md package.json package-lock.json tap-packages.yml templates scripts/update-tap.ts .github/workflows/update-tap.yml
+          git commit -m "Bump ${{ steps.request.outputs.package }} to ${version}"
+          git push

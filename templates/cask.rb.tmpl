@@ -1,0 +1,25 @@
+cask "{{token}}" do
+  version "{{version}}"
+
+  on_arm do
+    sha256 "{{arm64_sha256}}"
+
+    url "{{arm64_url}}"
+  end
+  on_intel do
+    sha256 "{{x86_64_sha256}}"
+
+    url "{{x86_64_url}}"
+  end
+
+  name "{{name}}"
+  desc "{{desc}}"
+  homepage "{{homepage}}"
+
+  depends_on macos: "{{macos}}"
+
+  app "{{app}}"
+{{postflight_block}}
+  uninstall quit: "{{bundle_id}}"
+{{caveats_block}}
+end

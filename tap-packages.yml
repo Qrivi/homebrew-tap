@@ -1,0 +1,30 @@
+packages:
+  macicon:
+    type: formula
+    repo: Qrivi/macicon
+    path: Formula/macicon.rb
+    assets:
+      arm64: macicon-arm64.tar.gz
+      x86_64: macicon-x86_64.tar.gz
+    install:
+      binary: macicon
+    test:
+      command: macicon
+      args:
+        - --version
+
+  codexmeter:
+    type: cask
+    repo: Qrivi/CodexMeter
+    path: Casks/codexmeter.rb
+    app: CodexMeter.app
+    bundle_id: dev.qrivi.CodexMeter
+    macos: ">= :sequoia"
+    assets:
+      arm64: CodexMeter-{tag}-arm64.dmg
+      x86_64: CodexMeter-{tag}-x86_64.dmg
+    postflight:
+      remove_quarantine: true
+    caveats:
+      - CodexMeter requires macOS 15.7 or newer.
+      - This cask removes quarantine from the unsigned app bundle after install so it can launch normally.
