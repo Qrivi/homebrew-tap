@@ -16,7 +16,7 @@ cask "{{token}}" do
   desc "{{desc}}"
   homepage "{{homepage}}"
 
-  depends_on macos: "{{macos}}"
+  depends_on macos: {{macos}}
 
   app "{{app}}"
 {{postflight_block}}

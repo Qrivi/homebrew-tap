@@ -293,6 +293,18 @@ function assetNames(pkg: TapPackage, tag: string, version: string): Record<Arch,
   };
 }
 
+function versionedCaskUrl(url: string, tag: string, version: string): string {
+  if (tag !== version && url.includes(tag)) {
+    return url.replaceAll(tag, tag.replace(version, "#{version}"));
+  }
+
+  if (url.includes(version)) {
+    return url.replaceAll(version, "#{version}");
+  }
+
+  return url;
+}
+
 async function archArtifacts(
   pkg: TapPackage,
   release: GitHubRelease,
@@ -330,6 +342,15 @@ function rubyString(value: string): string {
 
 function rubyStringContent(value: string): string {
   return value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+}
+
+function rubyMacosRequirement(value: string): string {
+  const atLeastNamedRelease = value.match(/^>=\s+:(\w+)$/);
+  if (atLeastNamedRelease) {
+    return `:${atLeastNamedRelease[1]}`;
+  }
+
+  return rubyString(value);
 }
 
 function indent(text: string, spaces: number): string {
@@ -396,14 +417,14 @@ end`, 2)}\n`
   return renderTemplate(pkg.template ?? "templates/cask.rb.tmpl", {
     token: rubyStringContent(pkg.token ?? defaultCaskToken(pkg.repo)),
     version,
-    arm64_url: rubyStringContent(artifacts.arm64.url),
+    arm64_url: rubyStringContent(versionedCaskUrl(artifacts.arm64.url, tag, version)),
     arm64_sha256: artifacts.arm64.sha256,
-    x86_64_url: rubyStringContent(artifacts.x86_64.url),
+    x86_64_url: rubyStringContent(versionedCaskUrl(artifacts.x86_64.url, tag, version)),
     x86_64_sha256: artifacts.x86_64.sha256,
     name: rubyStringContent(pkg.name ?? defaultCaskName(pkg.repo)),
     desc: rubyStringContent(pkg.desc ?? repoDescription(repo, packageKey)),
     homepage: rubyStringContent(pkg.homepage ?? defaultHomepage(pkg.repo)),
-    macos: rubyStringContent(pkg.macos),
+    macos: rubyMacosRequirement(pkg.macos),
     app,
     bundle_id: rubyStringContent(pkg.bundle_id),
     postflight_block: postflightBlock,
