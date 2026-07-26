@@ -104,6 +104,26 @@ jobs:
           package_type="$(node -e 'const fs = require("fs"); const YAML = require("yaml"); console.log(YAML.parse(fs.readFileSync("tap-packages.yml", "utf8")).packages[process.env.PACKAGE].type)')"
           echo "type=${package_type}" >> "${GITHUB_OUTPUT}"
 
+      - name: Trust package
+        env:
+          PACKAGE: ${{ steps.request.outputs.package }}
+          PACKAGE_TYPE: ${{ steps.metadata.outputs.type }}
+        run: |
+          set -euo pipefail
+
+          case "${PACKAGE_TYPE}" in
+            cask)
+              brew trust --cask "qrivi/tap/${PACKAGE}"
+              ;;
+            formula)
+              brew trust --formula "qrivi/tap/${PACKAGE}"
+              ;;
+            *)
+              echo "Unsupported package type: ${PACKAGE_TYPE}" >&2
+              exit 1
+              ;;
+          esac
+
       - name: Validate tap
         run: |
           brew style Formula/*.rb Casks/*.rb
