@@ -140,7 +140,9 @@ jobs:
         run: |
           set -euo pipefail
 
-          if git diff --quiet; then
+          git add Formula Casks README.md package.json package-lock.json tap-packages.yml templates scripts/update-tap.ts .github/workflows/update-tap.yml
+
+          if git diff --cached --quiet; then
             echo "No tap changes to commit."
             exit 0
           fi
@@ -148,8 +150,7 @@ jobs:
           version="${{ steps.request.outputs.tag }}"
           version="${version#v}"
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add Formula Casks README.md package.json package-lock.json tap-packages.yml templates scripts/update-tap.ts .github/workflows/update-tap.yml
+          git config user.name "Qrivibot"
+          git config user.email "bot@qrivi.dev"
           git commit -m "Bump ${{ steps.request.outputs.package }} to ${version}"
           git push
