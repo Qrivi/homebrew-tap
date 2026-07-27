@@ -1,4 +1,21 @@
 packages:
+  audioctl:
+    type: formula
+    repo: Qrivi/audioctl
+    path: Formula/audioctl.rb
+    template: templates/audioctl-formula.rb.tmpl
+    desc: Dependency-free CLI for inspecting and configuring macOS CoreAudio devices
+    license: MIT
+    assets:
+      arm64: audioctl-{tag}-arm64.tar.gz
+      x86_64: audioctl-{tag}-x86_64.tar.gz
+    install:
+      binary: audioctl
+    test:
+      command: audioctl
+      args:
+        - --version
+
   macicon:
     type: formula
     repo: Qrivi/macicon

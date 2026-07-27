@@ -1,0 +1,28 @@
+class {{class_name}} < Formula
+  desc "{{desc}}"
+  homepage "{{homepage}}"
+  version "{{version}}"
+  license "{{license}}"
+
+  if Hardware::CPU.intel?
+    url "{{x86_64_url}}"
+    sha256 "{{x86_64_sha256}}"
+  else
+    url "{{arm64_url}}"
+    sha256 "{{arm64_sha256}}"
+  end
+
+  depends_on macos: :sequoia
+
+  def install
+    bin.install "{{binary}}"
+  end
+
+  def caveats
+    "audioctl requires macOS 15.7 or newer."
+  end
+
+  test do
+    system {{test_invocation}}
+  end
+end

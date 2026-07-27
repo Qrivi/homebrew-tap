@@ -4,16 +4,17 @@ A Homebrew tap for my binaries.
 
 ```shell
 brew tap qrivi/tap
+brew trust qrivi/tap
 ```
 
 ## Binaries
 
-### [`macicon`](https://github.com/Qrivi/macicon)
+### [`audioctl`](https://github.com/Qrivi/audioctl)
 
-> Fast macOS-styled app icon generator
+> Dependency-free CLI for inspecting and configuring macOS CoreAudio devices
 
 ```shell
-brew install qrivi/tap/macicon
+brew install qrivi/tap/audioctl
 ```
 
 ### [`CodexMeter`](https://github.com/Qrivi/CodexMeter)
@@ -24,11 +25,22 @@ brew install qrivi/tap/macicon
 brew install --cask qrivi/tap/codexmeter
 ```
 
-CodexMeter is currently distributed as an unsigned app. The cask removes the quarantine attribute after install so the app can launch normally.
+> [!NOTE] CodexMeter is currently distributed as an unsigned app. The cask removes the quarantine attribute after
+> install so the app can launch normally.
+
+### [`macicon`](https://github.com/Qrivi/macicon)
+
+> Fast macOS-styled app icon generator
+
+```shell
+brew install qrivi/tap/macicon
+```
 
 ## Automation
 
-This tap accepts release notifications through the `bump-tap` repository dispatch event. Source repositories should create a fine-grained PAT secret named `TAP_DISPATCH_TOKEN` with `Contents: write` access to `Qrivi/homebrew-tap`, then call:
+This tap accepts release notifications through the `bump-tap` repository dispatch event. Source repositories should
+create a fine-grained PAT secret named `TAP_DISPATCH_TOKEN` with `Contents: write` access to `Qrivi/homebrew-tap`, then
+call:
 
 ```shell
 curl -fsSL -X POST https://api.github.com/repos/Qrivi/homebrew-tap/dispatches \
@@ -38,9 +50,13 @@ curl -fsSL -X POST https://api.github.com/repos/Qrivi/homebrew-tap/dispatches \
   --data '{"event_type":"bump-tap","client_payload":{"package":"macicon","repo":"Qrivi/macicon","tag":"1.0.1"}}'
 ```
 
-Use `package: "codexmeter"`, `repo: "Qrivi/CodexMeter"`, and a `v<version>` tag for CodexMeter releases.
+Use `package: "audioctl"`, `repo: "Qrivi/audioctl"`, and a `v<version>` tag for audioctl releases. Use
+`package: "codexmeter"`, `repo: "Qrivi/CodexMeter"`, and a `v<version>` tag for CodexMeter releases.
 
-Package metadata lives in [`tap-packages.yml`](tap-packages.yml). To add another app or CLI that follows the same release pattern, add one package entry with `assets.arm64` and `assets.x86_64`; the TypeScript updater renders the matching formula or cask from the templates in [`templates`](templates). Formula class names, cask tokens, cask names, and formula licenses are derived from GitHub repo metadata unless explicitly overridden.
+Package metadata lives in [`tap-packages.yml`](tap-packages.yml). To add another app or CLI that follows the same
+release pattern, add one package entry with `assets.arm64` and `assets.x86_64`; the TypeScript updater renders the
+matching formula or cask from the templates in [`templates`](templates). Formula class names, cask tokens, cask names,
+and formula licenses are derived from GitHub repo metadata unless explicitly overridden.
 
 ```shell
 npm run update-tap -- --package codexmeter --repo Qrivi/CodexMeter --tag v0.9.4
