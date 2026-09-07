@@ -20,10 +20,10 @@ cask "codexmeter" do
 
   app "CodexMeter.app"
 
-  postflight do
-    system_command "/usr/bin/xattr",
-                   args:         ["-dr", "com.apple.quarantine", "#{appdir}/CodexMeter.app"],
-                   must_succeed: false
+  postflight_steps do
+    run "/usr/bin/xattr",
+        args:         ["-dr", "com.apple.quarantine", "{{appdir}}/CodexMeter.app"],
+        must_succeed: false
   end
 
   uninstall quit: "dev.qrivi.CodexMeter"

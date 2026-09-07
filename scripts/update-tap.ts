@@ -404,10 +404,10 @@ async function renderCask(packageKey: string, pkg: CaskPackage, repo: GitHubRepo
   const artifacts = await archArtifacts(pkg, release, "asset");
   const app = rubyStringContent(pkg.app);
   const postflightBlock = pkg.postflight?.remove_quarantine
-    ? `\n${indent(`postflight do
-  system_command "/usr/bin/xattr",
-                 args:         ["-dr", "com.apple.quarantine", "\#{appdir}/${app}"],
-                 must_succeed: false
+    ? `\n${indent(`postflight_steps do
+  run "/usr/bin/xattr",
+      args:         ["-dr", "com.apple.quarantine", "{{appdir}}/${app}"],
+      must_succeed: false
 end`, 2)}\n`
     : "\n";
   const caveatsBlock = pkg.caveats?.length
