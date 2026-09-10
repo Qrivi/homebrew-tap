@@ -1,13 +1,13 @@
 cask "codexmeter" do
-  version "1.1.0"
+  version "1.1.1"
 
   on_arm do
-    sha256 "181ba1cfc7f70649db6b5a3572be17284024f2fbc8ce39b26bcfeb4f7e8b70d1"
+    sha256 "aa2de3818a1678ab8b554de82c783c12ce41841d033fd16a935c16161cc7a63f"
 
     url "https://github.com/Qrivi/CodexMeter/releases/download/v#{version}/CodexMeter-v#{version}-arm64.dmg"
   end
   on_intel do
-    sha256 "cf38df85227cf76fa30f2f3db6e46e97b62d091491f3e1653fa1491c6d09e867"
+    sha256 "b64e3697303848c0965b2d97792de4192544bd2c80eb34758c6d458f93967411"
 
     url "https://github.com/Qrivi/CodexMeter/releases/download/v#{version}/CodexMeter-v#{version}-x86_64.dmg"
   end
