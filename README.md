@@ -25,8 +25,8 @@ brew install qrivi/tap/audioctl
 brew install --cask qrivi/tap/codexmeter
 ```
 
-> [!NOTE] CodexMeter is currently distributed as an unsigned app. The cask removes the quarantine attribute after
-> install so the app can launch normally.
+> [!NOTE]
+> CodexMeter releases from v1.2.1 are Developer ID signed and notarized by Apple.
 
 ### [`macicon`](https://github.com/Qrivi/macicon)
 

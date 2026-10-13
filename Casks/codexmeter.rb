@@ -20,16 +20,9 @@ cask "codexmeter" do
 
   app "CodexMeter.app"
 
-  postflight_steps do
-    run "/usr/bin/xattr",
-        args:         ["-dr", "com.apple.quarantine", "{{appdir}}/CodexMeter.app"],
-        must_succeed: false
-  end
-
   uninstall quit: "dev.qrivi.CodexMeter"
 
   caveats <<~EOS
     CodexMeter requires macOS 15.7 or newer.
-    This cask removes quarantine from the unsigned app bundle after install so it can launch normally.
   EOS
 end
