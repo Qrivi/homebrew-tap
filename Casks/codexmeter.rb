@@ -1,13 +1,13 @@
 cask "codexmeter" do
-  version "1.2.1"
+  version "1.3.0"
 
   on_arm do
-    sha256 "e5921830a73dc5458f2cdc9a43b64c6cb9761f2b2ffd87948cc59824aed5a19b"
+    sha256 "3f08cd43f32e5d9a1f7087045d8a314926165081b939ad3e3f4a131495d1ba43"
 
     url "https://github.com/Qrivi/CodexMeter/releases/download/v#{version}/CodexMeter-v#{version}-arm64.dmg"
   end
   on_intel do
-    sha256 "425bbddaf3d16f2366720b92cd1c76c955d067e10b9ad5a1a9df5d732b22b803"
+    sha256 "d26093d2cf74b9f528e634d2d2cecf2fe7b9dc35ab531c951da06ca22ed8e5b3"
 
     url "https://github.com/Qrivi/CodexMeter/releases/download/v#{version}/CodexMeter-v#{version}-x86_64.dmg"
   end
@@ -16,6 +16,7 @@ cask "codexmeter" do
   desc "Small menu bar app for monitoring Codex usage limits"
   homepage "https://github.com/Qrivi/CodexMeter"
 
+  auto_updates true
   depends_on macos: :sequoia
 
   app "CodexMeter.app"

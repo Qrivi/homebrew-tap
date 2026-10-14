@@ -37,6 +37,7 @@ packages:
     app: CodexMeter.app
     bundle_id: dev.qrivi.CodexMeter
     macos: ">= :sequoia"
+    auto_updates: true
     assets:
       arm64: CodexMeter-{tag}-arm64.dmg
       x86_64: CodexMeter-{tag}-x86_64.dmg

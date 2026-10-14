@@ -39,6 +39,7 @@ type CaskPackage = BasePackage & {
   app: string;
   bundle_id: string;
   macos: string;
+  auto_updates?: boolean;
   postflight?: {
     remove_quarantine?: boolean;
   };
@@ -409,7 +410,7 @@ async function renderCask(packageKey: string, pkg: CaskPackage, repo: GitHubRepo
       args:         ["-dr", "com.apple.quarantine", "{{appdir}}/${app}"],
       must_succeed: false
 end`, 2)}\n`
-    : "\n";
+    : "";
   const caveatsBlock = pkg.caveats?.length
     ? `\n${indent(["caveats <<~EOS", ...pkg.caveats.map((line) => `  ${line}`), "EOS"].join("\n"), 2)}`
     : "\n";
@@ -424,6 +425,7 @@ end`, 2)}\n`
     name: rubyStringContent(pkg.name ?? defaultCaskName(pkg.repo)),
     desc: rubyStringContent(pkg.desc ?? repoDescription(repo, packageKey)),
     homepage: rubyStringContent(pkg.homepage ?? defaultHomepage(pkg.repo)),
+    auto_updates_block: pkg.auto_updates ? "\n  auto_updates true" : "",
     macos: rubyMacosRequirement(pkg.macos),
     app,
     bundle_id: rubyStringContent(pkg.bundle_id),
